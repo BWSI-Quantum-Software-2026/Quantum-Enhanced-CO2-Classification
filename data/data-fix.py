@@ -12,7 +12,7 @@ data.to_csv("boston_weather_data.csv", index=False)
 
 
 #delete the first 1766 rows
-data = data.drop(data.index[0:1766])
+data = data.drop(data.index[0:2921])
 data.to_csv("boston_weather_data.csv")
 
 
