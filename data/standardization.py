@@ -15,3 +15,4 @@ wspd_mean = np.mean(wspd_col)
 tavg_mean = np.mean(tavg_col)
 
 print(prcp_mean, wspd_mean, tavg_mean)
+
