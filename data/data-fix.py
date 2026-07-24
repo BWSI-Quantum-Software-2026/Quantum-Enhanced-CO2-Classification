@@ -11,7 +11,7 @@ data.to_csv("boston_weather_data.csv", index=False)
 #delete the rows missing wind dir
 
 
-#delete the first 1766 rows
+#delete the first 2921 rows (8 years)
 data = data.drop(data.index[0:2921])
 data.to_csv("boston_weather_data.csv")
 
