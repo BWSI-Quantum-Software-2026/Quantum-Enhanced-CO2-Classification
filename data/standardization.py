@@ -1,7 +1,4 @@
-import qiskit
-import qiskit_machine_learning
 import pandas as pd
-import torch
 import numpy as np
 
 data = pd.read_csv("boston_weather_data.csv")
