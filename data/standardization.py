@@ -15,31 +15,31 @@ tavg_mean = np.mean(tavg_col)
 wdir_mean = np.mean(wdir_col)
 wspd_mean = np.mean(wspd_col)
 
-print(tavg_mean, wdir_mean, wspd_mean)
+print("MEANS", tavg_mean, wdir_mean, wspd_mean)
 
 tavg_stdev = np.std(tavg_col)
 wdir_stdev = np.std(wdir_col)
 wspd_stdev = np.std(wspd_col)
 
-print(tavg_stdev, wdir_stdev, wspd_stdev)
+print("STANDARD DEVIATIONS", tavg_stdev, wdir_stdev, wspd_stdev)
 
 tavg_zscr = (X[:, 0] - tavg_mean) / tavg_stdev
 wdir_zscr = (X[:, 1] - wdir_mean) / wdir_stdev
 wspd_zscr = (X[:, 2] - wspd_mean) / wspd_stdev
 Z = np.column_stack([tavg_zscr, wdir_zscr, wspd_zscr])
 
-print(Z.shape)
-print(Z[:5])
+print("Z ARRAY SIZE", Z.shape)
+print("Z ARRAY SAMPLE", Z[:5])
 
 max_abs = np.max(np.abs(Z), axis = 0)
 
-print(max_abs)
+print("HIGHEST Z SCORE", max_abs)
 
 alphas = np.pi / max_abs
 
-print(alphas)
+print("SCALING FACTORS", alphas)
 
 rotations = Z * alphas
 
-print(rotations.shape)
-print(rotations[:5])
+print("ROTATIONS ARRAY SIZE", rotations.shape)
+print("ROTATIONS ARRAY SAMPLE", rotations[:5])
