@@ -1,7 +1,18 @@
 
 import pandas as pd
+import numpy as np
 
 data = pd.read_csv("boston_weather_data.csv")
-data["pres"] = data["pres"].interpolate(method="linear").round(1)
 
+#calculate the missing pres column using linear interpolation
+data["pres"] = data["pres"].interpolate(method="linear").round(1)
 data.to_csv("boston_weather_data.csv", index=False)
+
+#delete the rows missing wind dir
+
+
+#delete the first 1766 rows
+data = data.drop(data.index[0:1766])
+data.to_csv("boston_weather_data.csv")
+
+
