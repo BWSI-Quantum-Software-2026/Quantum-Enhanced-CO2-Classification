@@ -4,7 +4,7 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.primitives import EstimatorPub
+from qiskit.primitives import StatevectorEstimator
 from qiskit.primitives.containers import ObservablesArray, BindingsArray
 from qiskit.quantum_info import SparsePauliOp
 from data.standardization import load_and_prepare
@@ -60,7 +60,7 @@ for layer in range(depth): # Repeats for depth
 # Observable
 observable = SparsePauliOp.from_list([("ZII", 1.0)]) # Measure outputted value of qubit 0
 observables = ObservablesArray([observable])
-estimator = EstimatorPub(qc, observables)
+estimator = StatevectorEstimator()
 
 def forward(x, w): # first 3 inputs and weight values
     bind_dict = {} # Maps parameters to numerical values
@@ -73,9 +73,12 @@ def forward(x, w): # first 3 inputs and weight values
     for param, value in zip(weight_params, w):
         bind_dict[param] = value # Weights into variational layers
 
-    bound_qc = qc.bind_parameters(bind_dict) # Parameters with real numbers
-    result = estimator.run([bound_qc], [observable]).result() # Runs estimator on circuit and observable
-    return result.values[0] # Returns scalar output of QNN for that sample
+    bound_qc = qc.assign_parameters(bind_dict) # Parameters with real numbers
+    job = estimator.run(
+        [(bound_qc, observable)]
+    )
+    result = job.result() # Runs estimator on circuit and observable
+    return float(result[0].data.evs) # Returns scalar output of QNN for that sample
 
 # Training loss with MAE, error on training data
 def loss_train(w):
