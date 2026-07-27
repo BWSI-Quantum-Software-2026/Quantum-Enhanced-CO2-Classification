@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 def load_and_prepare():
-    data = pd.read_csv("../data/boston_weather_data_2.csv")
+    data = pd.read_csv("data/boston_weather_data_2.csv")
     X = data[["tavg", "hum", "wspd"]].values
 
     Y = data[["tavg", "hum", "wspd"]].values
