@@ -18,6 +18,18 @@ def create_lag_features(df, features, lag_window, target_col = 'tavg'):
 
     return df
 
+#create X, and Y dataset for ML. 
+def create_XY(df, feature_colunms, lag_window):
+    df_lag = create_lag_features(df, feature_colunms, lag_window)
+
+    lag_features = [col for col in df_lag.columns if '_lag' in col]
+    df_clean = df_lag.dropna(subset = lag_features+['target_tomorrow_tavg'])
+
+    X = df_clean[lag_features]
+    Y = df_clean['target_tomorrow_tavg']
+
+    return X, Y
+
 def standardize_features(df, feature_columns):
     X = df[feature_columns].values
 
