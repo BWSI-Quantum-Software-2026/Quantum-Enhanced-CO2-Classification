@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-data = pd.read_csv("boston_weather_data_2.csv")
+data = pd.read_csv("../data/boston_weather_data_2.csv")
 X = data[["tavg", "hum", "wspd"]].values
 
 tavg_col = X[:, 0]
