@@ -4,6 +4,10 @@ import numpy as np
 data = pd.read_csv("boston_weather_data_2.csv")
 X = data[["tavg", "hum", "wspd"]].values
 
+Y = data[["tavg", "hum", "wspd"]].values
+Y = data["tavg"].shift(-1).dropna().values
+X = X[:-1]
+
 tavg_col = X[:, 0]
 hum_col = X[:, 1]
 wspd_col = X[:, 2]
