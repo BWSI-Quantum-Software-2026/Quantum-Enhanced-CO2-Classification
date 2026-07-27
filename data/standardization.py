@@ -1,29 +1,29 @@
 import pandas as pd
 import numpy as np
 
-data = pd.read_csv("boston_weather_data.csv")
-X = data[["tavg", "wdir", "wspd"]].values
+data = pd.read_csv("boston_weather_data_2.csv")
+X = data[["tavg", "hum", "wspd"]].values
 
 tavg_col = X[:, 0]
-wdir_col = X[:, 1]
+hum_col = X[:, 1]
 wspd_col = X[:, 2]
 
 tavg_mean = np.mean(tavg_col)
-wdir_mean = np.mean(wdir_col)
+hum_mean = np.mean(hum_col)
 wspd_mean = np.mean(wspd_col)
 
-print("MEANS", tavg_mean, wdir_mean, wspd_mean)
+print("MEANS", tavg_mean, hum_mean, wspd_mean)
 
 tavg_stdev = np.std(tavg_col)
-wdir_stdev = np.std(wdir_col)
+hum_stdev = np.std(hum_col)
 wspd_stdev = np.std(wspd_col)
 
-print("STANDARD DEVIATIONS", tavg_stdev, wdir_stdev, wspd_stdev)
+print("STANDARD DEVIATIONS", tavg_stdev, hum_stdev, wspd_stdev)
 
 tavg_zscr = (X[:, 0] - tavg_mean) / tavg_stdev
-wdir_zscr = (X[:, 1] - wdir_mean) / wdir_stdev
+hum_zscr = (X[:, 1] - hum_mean) / hum_stdev
 wspd_zscr = (X[:, 2] - wspd_mean) / wspd_stdev
-Z = np.column_stack([tavg_zscr, wdir_zscr, wspd_zscr])
+Z = np.column_stack([tavg_zscr, hum_zscr, wspd_zscr])
 
 print("Z ARRAY SIZE", Z.shape)
 print("Z ARRAY SAMPLE", Z[:5])
