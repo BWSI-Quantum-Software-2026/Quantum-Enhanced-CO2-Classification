@@ -5,7 +5,7 @@ sys.path.append(project_root)
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
 from qiskit.primitives import StatevectorEstimator
-from qiskit.primitives.containers import ObservablesArray, BindingsArray
+from qiskit.primitives.containers import ObservablesArray
 from qiskit.quantum_info import SparsePauliOp
 from data.standardization import load_and_prepare
 
@@ -122,4 +122,4 @@ for epoch in range(epochs):
     g = grad_batch(w, Xb, Yb) # finds gradient of batch loss to weight
     w -= learning_rate * g # updates weights, if g is negative it will increase and if g is positive it will decrease
 
-    print(f"Epoch {epoch}, train loss = {loss_train(w):.6f}, validation loss = {loss_val(w):.6f}") # finds training and validation loss and prints both to 6 decimals
+    print(f"Epoch {epoch}, training loss = {loss_train(w):.6f}, validation loss = {loss_val(w):.6f}") # finds training and validation loss and prints both to 6 decimals
