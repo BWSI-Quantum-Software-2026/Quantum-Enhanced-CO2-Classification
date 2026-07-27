@@ -1,7 +1,7 @@
 import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit import Parameter, ParameterVector
-from qiskit.primitives import Estimator
+from qiskit.primitives import EstimatorPub
 from qiskit.quantum_info import SparsePauliOp
 from data.standardization import load_and_prepare
 
@@ -55,7 +55,7 @@ for layer in range(depth): # Repeats for depth
 
 # Observable
 observable = SparsePauliOp.from_list([("ZII", 1.0)]) # Measure outputted value of qubit 0
-estimator = Estimator()
+estimator = EstimatorPub()
 
 def forward(x, w): # first 3 inputs and weight values
     bind_dict = {} # Maps parameters to numerical values
