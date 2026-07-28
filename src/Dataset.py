@@ -3,9 +3,7 @@ import numpy as np
 import torch
 from torch.utils.data.dataset import Dataset
 
-# Which columns from the CSV are used as model features (in this order).
-# Edit this list if you want to add/drop features - everything downstream
-# (input size, output size, un-normalizing) adapts automatically.
+
 FEATURE_COLUMNS = ["hum", "uvi", "tavg", "wspd", "wdir", "pres", "prcp"]
 
 
@@ -27,17 +25,15 @@ class WeatherDataset(Dataset):
     """
 
     def __init__(self, csv_file, day_range=15, split_date="2025-01-01", train_test="train"):
-        # ---- load + build a proper datetime index ----
+
         raw = pd.read_csv(csv_file)
         raw["date"] = pd.to_datetime(dict(year=raw["YEAR"], month=raw["MO"], day=raw["DY"]))
         raw = raw.sort_values("date").set_index("date")
 
         split_date = pd.to_datetime(split_date)
 
-        # Features only, in a fixed column order
         features = raw[FEATURE_COLUMNS].astype(np.float32)
 
-        # ---- normalization stats always come from the train portion ----
         train_features = features[features.index < split_date]
         self.mean = torch.tensor(train_features.mean().values, dtype=torch.float32)
         self.std = torch.tensor(train_features.std().values, dtype=torch.float32)
