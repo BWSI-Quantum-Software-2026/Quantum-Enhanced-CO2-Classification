@@ -1,12 +1,30 @@
 import pandas as pd
 import numpy as np
+
+def create_lag_features(df, features, lag_window):
+    df = df.copy()
+    for feature in features:
+        for lag in range(1, lag_window + 1):
+            df[f"{feature}_lag{lag}"] = df[feature].shift(lag)
+    return df
+
 def load_and_prepare():
     data = pd.read_csv("data/boston_weather_data_2.csv")
-    X = data[["tavg", "hum", "wspd"]].values
 
-    Y = data[["tavg", "hum", "wspd"]].values
+    base_features = ["tavg", "hum", "wspd"]
+    data = create_lag_features(data, base_features, lag_window = 4)
+
+    lagged_cols = (
+        base_features +
+        [f"{f}_lag{l}" for f in base_features for l in range(1, 5)]
+    )
+
     Y = data["tavg"].shift(-1).dropna().values
-    X = X[:-1]
+    data = data.dropna()
+
+    X = data[lagged_cols].values
+
+    Y = Y[-len(X):]
 
     tavg_col = X[:, 0]
     hum_col = X[:, 1]
@@ -45,4 +63,11 @@ def load_and_prepare():
     print("ROTATIONS ARRAY SIZE", rotations.shape)
     print("ROTATIONS ARRAY SAMPLE", rotations[:5])
 
+    print("X/Y aligned:", len(rotations) == len(Y))
+    print("Rotations shape:", rotations.shape)
+    print("Y shape:", Y.shape)
+    print("Sample rotations:", rotations[:3])
+    print("Sample Y:", Y[:3])
+
     return rotations, Y
+
