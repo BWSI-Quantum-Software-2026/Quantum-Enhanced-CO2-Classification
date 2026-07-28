@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import timedelta
 import sys, os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
@@ -10,7 +11,7 @@ from qiskit.quantum_info import SparsePauliOp
 from data.standardization import load_and_prepare
 
 # standardization
-X, Y = load_and_prepare()
+X, Y, tavg_mean, tavgy_mean, tavg_stdev, tavgy_stdev, alphasx, alphasy, dates = load_and_prepare()
 
 # qubit allocation
 num_qubits = X.shape[1]
@@ -82,13 +83,13 @@ def forward(x, w): # first 3 inputs and weight values
 
 # Training loss with MAE, error on training data
 def loss_train(w):
-    preds = np.array([forward(X_train[i], w) for i in range(len(X_train))]) # predictions
-    return np.mean(np.abs(preds - Y_train))
+    preds_train = np.array([forward(X_train[i], w) for i in range(len(X_train))]) # predictions
+    return np.mean(np.abs(preds_train - Y_train))
 
 # Validation loss with MAE, generalization to nontrained data
 def loss_val(w):
-    preds = np.array([forward(X_val[i], w) for i in range(len(X_val))]) # predictions
-    return np.mean(np.abs(preds - Y_val))
+    preds_val = np.array([forward(X_val[i], w) for i in range(len(X_val))]) # predictions
+    return np.mean(np.abs(preds_val - Y_val))
 
 # Gradient estimation
 def grad_batch(w, Xb, Yb, epsilon = 0.001): # batch of data
@@ -123,3 +124,40 @@ for epoch in range(epochs):
     w -= learning_rate * g # updates weights, if g is negative it will increase and if g is positive it will decrease
 
     print(f"Epoch {epoch}, training loss = {loss_train(w):.6f}, validation loss = {loss_val(w):.6f}") # finds training and validation loss and prints both to 6 decimals
+
+alphay = alphasy # Idk nothingburger variable, I put it in and I dont care to take it out tbh
+
+# Converts output to degrees celsius
+def qnn_to_celsius(pred_scaled, meanY, stdevY, alphaY): 
+    pred_z = pred_scaled / alphaY # reversing scaling
+    pred_celsius = pred_z * stdevY + meanY # reversing z-score
+    return pred_celsius 
+
+# Forecastinf function
+def forecast_future_temperature(num_days):
+    future_preds = [] # empty array to place forecast
+
+    current_X = X[-1].copy() # last row of array
+    hum_const = current_X[1] # humidity stays constant
+    wspd_const = current_X[2] # wind speed stays constant
+
+    for step in range (num_days): # repeats for days in future to forecast to
+        pred_next = forward(current_X, w)
+        future_preds.append(pred_next) # saving forecast
+        next_temp = pred_next
+        current_X = np.array([next_temp, hum_const, wspd_const])
+    return future_preds
+
+last_date = dates.iloc[-1] # last date of dataset where qnn forecasts from
+
+prediction_days = 7 # Change to amount of day in future to forecast
+
+# functions for outputting data
+future_preds = forecast_future_temperature(prediction_days)
+future_preds_celsius = [qnn_to_celsius(p, tavgy_mean, tavgy_stdev, alphay) for p in future_preds]
+future_dates = [last_date + timedelta(days = i + 1) for i in range(prediction_days)]
+
+# final printed values
+print("{prediction_days}-day forecast Celsius:")
+for date, temp in zip(future_dates, future_preds_celsius):
+    print(f"{date.date()}: {temp:.2f} Celsius")
