@@ -72,4 +72,4 @@ future_dates = [last_date + timedelta(days = i + 1) for i in range(prediction_da
 
 print(f"{prediction_days}-day forecast:")
 for date, t, h, w in zip(future_dates, future_temp_celsius, future_hum_percent, future_wspd_real):
-    print(f"{date.date()}: Temp={t:.2f} Celsius, Hum={h:.2f}%, Wind={w:.2f}m/s")
+    print(f"{date.date()}: Temp = {t:.2f} Celsius, Hum = {h:.2f} %, Wind = {w:.2f} m/s")
