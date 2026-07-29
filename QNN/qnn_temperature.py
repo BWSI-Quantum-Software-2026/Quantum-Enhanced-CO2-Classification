@@ -1,5 +1,4 @@
 import numpy as np
-from datetime import timedelta
 import sys, os
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_root)
@@ -13,12 +12,12 @@ from data.standardization import load_and_prepare
 def qnn_temperature():
     print("TRAINING TEMPERATURE")
     # standardization
-    X, Ytemp, Yhum, Ywspd, tavg_mean, tavg_stdev, hum_mean, hum_stdev, wspd_mean, wspd_stdev, tavgy_mean, tavgy_stdev, humy_mean, humy_stdev, wspdy_mean, wspdy_stdev, alphasx, alphasytemp, alphasyhum, alphasywspd, dates = load_and_prepare()
+    X, Ytemp, Yhum, Ywspd, tavgy_mean, tavgy_stdev, humy_mean, humy_stdev, wspdy_mean, wspdy_stdev, alphasx, alphasytemp, alphasyhum, alphasywspd, dates = load_and_prepare()
 
     # qubit allocation
-    num_qubits = X.shape[1]
+    num_qubits = 3
 
-    input_params = ParameterVector("x", num_qubits) # Holding data rotations, Feature Vector
+    input_params = ParameterVector("x", X.shape[1]) # Holding data rotations, Feature Vector
     weight_params = [] # Stores trainable parameters
 
     qc = QuantumCircuit(num_qubits) # 3 qubit quantum circuit
@@ -29,8 +28,26 @@ def qnn_temperature():
     qc.h(2)
 
     # Data encoding layer
-    for i in range(num_qubits):
-        qc.ry(input_params[i], i)
+    # Temperature qubit 
+    qc.rx(input_params[0], 0) # tavg(t)
+    qc.ry(input_params[3], 0) # tavg(t-1)
+    qc.rz(input_params[6], 0) # tavg(t-2)
+    qc.rx(input_params[9], 0) # tavg(t-3)
+    qc.ry(input_params[12], 0) # tavg(t-4)
+
+    # Humidity qubit
+    qc.rx(input_params[1], 1) # hum(t)
+    qc.ry(input_params[4], 1) # hum(t-1)
+    qc.rz(input_params[7], 1) # hum(t-2)
+    qc.rx(input_params[10], 1) # hum(t-3)
+    qc.ry(input_params[13], 1) # hum(t-4)
+
+    # Wind Speed qubit
+    qc.rx(input_params[2], 2) # wspd(t)
+    qc.ry(input_params[5], 2) # wspd(t-1)
+    qc.rz(input_params[8], 2) # wspd(t-2)
+    qc.rx(input_params[11], 2) # wspd(t-3)
+    qc.ry(input_params[14], 2) # wspd(t-4)
 
     # Variational Block
     depth = 3 # Number of times to repeat variational layer
@@ -69,7 +86,7 @@ def qnn_temperature():
         bind_dict = {} # Maps parameters to numerical values
 
         # Bind Input
-        for i in range(num_qubits):
+        for i in range(len(input_params)):
             bind_dict[input_params[i]] = x[i] # Rotations into data encoding layer
 
         # Bind Weights

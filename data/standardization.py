@@ -37,36 +37,26 @@ def load_and_prepare():
     Yhum = Yhum[-len(X):]
     Ywspd = Ywspd[-len(X):]
 
-    tavg_col = X[:, 0]
-    hum_col = X[:, 1]
-    wspd_col = X[:, 2]
     tavgy_col = Ytavg
     humy_col = Yhum
     wspdy_col = Ywspd
 
-    tavg_mean = np.mean(tavg_col)
-    hum_mean = np.mean(hum_col)
-    wspd_mean = np.mean(wspd_col)
+    X_mean = np.mean(X, axis=0) 
     tavgy_mean = np.mean(tavgy_col)
     humy_mean = np.mean(humy_col)
     wspdy_mean = np.mean(wspdy_col)
 
-    print("MEANS", tavg_mean, hum_mean, wspd_mean, tavgy_mean, humy_mean, wspdy_mean)
+    print("MEANS", X_mean, tavgy_mean, humy_mean, wspdy_mean)
 
-    tavg_stdev = np.std(tavg_col)
-    hum_stdev = np.std(hum_col)
-    wspd_stdev = np.std(wspd_col)
+    X_stdev = np.std(X, axis=0)
     tavgy_stdev = np.std(tavgy_col)
     humy_stdev = np.std(humy_col)
     wspdy_stdev = np.std(wspdy_col)
 
 
-    print("STANDARD DEVIATIONS", tavg_stdev, hum_stdev, wspd_stdev, tavgy_stdev, humy_stdev, wspdy_stdev)
+    print("STANDARD DEVIATIONS", X_stdev, tavgy_stdev, humy_stdev, wspdy_stdev)
 
-    tavg_zscr = (X[:, 0] - tavg_mean) / tavg_stdev
-    hum_zscr = (X[:, 1] - hum_mean) / hum_stdev
-    wspd_zscr = (X[:, 2] - wspd_mean) / wspd_stdev
-    ZX = np.column_stack([tavg_zscr, hum_zscr, wspd_zscr])
+    X_zscr = (X - X_mean) / X_stdev
 
     tavgy_zscr = (Ytavg - tavgy_mean) / tavgy_stdev
     ZYtemp = tavgy_zscr
@@ -75,8 +65,8 @@ def load_and_prepare():
     wspdy_zscr = (Ywspd - wspdy_mean) / wspdy_stdev
     ZYwspd = wspdy_zscr
 
-    print("Z INPUT ARRAY SIZE", ZX.shape)
-    print("Z INPUT ARRAY SAMPLE", ZX[:5])
+    print("Z INPUT ARRAY SIZE", X_zscr.shape)
+    print("Z INPUT ARRAY SAMPLE", X_zscr[:5])
 
     print("Z EXPECTED TEMP ARRAY SIZE", ZYtemp.shape)
     print("Z EXPECTED TEMP ARRAY SAMPLE", ZYtemp[:5])
@@ -85,7 +75,7 @@ def load_and_prepare():
     print("Z EXPECTED WSPD ARRAY SIZE", ZYwspd.shape)
     print("Z EXPECTED WSPD ARRAY SAMPLE", ZYwspd[:5])
 
-    max_absx = np.max(np.abs(ZX), axis = 0)
+    max_absx = np.max(np.abs(X_zscr), axis = 0)
     max_absytemp = np.max(np.abs(ZYtemp), axis = 0)
     max_absyhum = np.max(np.abs(ZYhum), axis = 0)
     max_absywspd = np.max(np.abs(ZYwspd), axis = 0)
@@ -105,7 +95,7 @@ def load_and_prepare():
     print("SCALING FACTORS EXPECTED HUM", alphasyhum)
     print("SCALING FACTORS EXPECTED WSPD", alphasywspd)
 
-    rotationsx = ZX * alphasx
+    rotationsx = X_zscr * alphasx
     rotationsytemp = ZYtemp * alphasytemp
     rotationsyhum = ZYhum * alphasyhum
     rotationsywspd = ZYwspd * alphasywspd
@@ -133,5 +123,5 @@ def load_and_prepare():
     print("Sample Y Hum:", rotationsyhum[:3])
     print("Sample Y Wspd:", rotationsywspd[:3])
 
-    return rotationsx, rotationsytemp, rotationsyhum, rotationsywspd, tavg_mean, tavg_stdev, hum_mean, hum_stdev, wspd_mean, wspd_stdev, tavgy_mean, tavgy_stdev, humy_mean, humy_stdev, wspdy_mean, wspdy_stdev, alphasx, alphasytemp, alphasyhum, alphasywspd, dates
+    return rotationsx, rotationsytemp, rotationsyhum, rotationsywspd, tavgy_mean, tavgy_stdev, humy_mean, humy_stdev, wspdy_mean, wspdy_stdev, alphasx, alphasytemp, alphasyhum, alphasywspd, dates
 
