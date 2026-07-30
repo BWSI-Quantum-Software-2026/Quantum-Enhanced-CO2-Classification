@@ -78,7 +78,7 @@ def qnn_humidity():
         qc.rz(theta[2], 2); qc.ry(phi[2], 2); qc.rz(omega[2], 2) # Qubit 3 rotations
 
     # Observable
-    observable = SparsePauliOp.from_list([("ZII", 1.0)]) # Measure outputted value of qubit 0
+    observable = SparsePauliOp.from_list([("ZII", 1.0), ("IZI", 1.0), ("IIZ", 1.0), ("ZZI", 0.5), ("IZZ", 0.5), ("ZIZ", 0.5)]) # Measure outputted value of qubit 0
     observables = ObservablesArray([observable])
     estimator = StatevectorEstimator()
 
