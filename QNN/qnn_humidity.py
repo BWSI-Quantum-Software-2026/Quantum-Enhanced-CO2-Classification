@@ -144,4 +144,4 @@ def qnn_humidity():
 
         print(f"Humidity, Epoch {epoch}, training loss = {loss_train(w):.6f}, validation loss = {loss_val(w):.6f}") # finds training and validation loss and prints both to 6 decimals
 
-    return w
+    return qc, w
