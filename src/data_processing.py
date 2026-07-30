@@ -23,9 +23,13 @@ def create_XY(df, feature_colunms, lag_window):
     df_lag = create_lag_features(df, feature_colunms, lag_window)
 
     lag_features = [col for col in df_lag.columns if '_lag' in col]
-    df_clean = df_lag.dropna(subset = lag_features+['target_tomorrow_tavg'])
 
-    X = df_clean[lag_features]
+    #today's feature with lagged features
+    all_features = feature_colunms+lag_features
+
+    df_clean = df_lag.dropna(subset = all_features+['target_tomorrow_tavg'])
+
+    X = df_clean[all_features]
     Y = df_clean['target_tomorrow_tavg']
 
     return X, Y
@@ -52,6 +56,10 @@ def standardize_Y(df):
     std = np.std(df, axis = 0)
 
     Zscr = (df-mean)/std
+
+    # Zscr_clipped = np.clip(Zscr, -3.0, 3.0)#To compress the outlier into a smaller value
+    # max_abs = np.max(np.abs(Zscr_clipped))
+    # Zscr_clipped /= max_abs
 
     return Zscr.to_numpy(), mean, std
 
