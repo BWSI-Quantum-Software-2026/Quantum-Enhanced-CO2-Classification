@@ -21,6 +21,5 @@ for i, circ in enumerate(compiled):
     print("Qubits:", circ.num_qubits)
     print("Depth:", circ.depth())
     print("Ops:", circ.count_ops())
-    print()
 
 
